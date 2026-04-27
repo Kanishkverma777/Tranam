@@ -132,7 +132,7 @@ export default function DashboardPage() {
                 <div className="stat-value" style={{ color: 'var(--text-primary)' }}>{s.active_checkins}</div>
                 <div className="stat-change">Currently underground</div>
               </div>
-              <div className="stat-card dark" style={{ cursor: 'pointer' }} onClick={() => navigate('/incidents')}>
+              <div className="stat-card dark" style={{ cursor: 'pointer' }} onClick={() => navigate('/checkins')}>
                 <div className="stat-header"><span className="stat-label">Alerts Today</span> <div className="stat-icon" style={{ color: 'var(--red)' }}><AlertTriangle size={20} /></div></div>
                 <div className="stat-value">{s.alerts_fired_today}</div>
                 <div className="stat-change">Emergency actions triggered</div>
