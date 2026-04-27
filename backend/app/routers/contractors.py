@@ -61,6 +61,25 @@ async def get_contractor(contractor_id: UUID, db: AsyncSession = Depends(get_db)
     return contractor
 
 
+@router.put("/{contractor_id}", response_model=ContractorResponse)
+async def update_contractor(
+    contractor_id: UUID, payload: ContractorUpdate, db: AsyncSession = Depends(get_db)
+):
+    """Update contractor profile"""
+    result = await db.execute(select(Contractor).where(Contractor.id == contractor_id))
+    contractor = result.scalar_one_or_none()
+    if not contractor:
+        raise HTTPException(status_code=404, detail="Contractor not found")
+
+    update_data = payload.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(contractor, key, value)
+
+    await db.flush()
+    await db.refresh(contractor)
+    return contractor
+
+
 @router.post("/{contractor_id}/rate", status_code=201)
 async def rate_contractor(
     contractor_id: UUID,

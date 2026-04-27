@@ -182,6 +182,13 @@ class ContractorCreate(BaseModel):
     contact_phone: Optional[str] = None
 
 
+class ContractorUpdate(BaseModel):
+    name: Optional[str] = None
+    registration_number: Optional[str] = None
+    region: Optional[str] = None
+    contact_phone: Optional[str] = None
+
+
 class ContractorResponse(BaseModel):
     id: UUID
     name: str

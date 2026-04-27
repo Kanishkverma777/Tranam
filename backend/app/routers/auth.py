@@ -33,7 +33,14 @@ async def register(payload: UserRegister, db: AsyncSession = Depends(get_db)):
     token = create_access_token({"sub": str(user.id), "role": user.role})
     return TokenResponse(
         access_token=token,
-        user={"id": str(user.id), "email": user.email, "name": user.name, "role": user.role},
+        user={
+            "id": str(user.id),
+            "email": user.email,
+            "name": user.name,
+            "role": user.role,
+            "worker_id": str(user.worker_id) if user.worker_id else None,
+            "contractor_id": str(user.contractor_id) if user.contractor_id else None,
+        },
     )
 
 
@@ -52,7 +59,14 @@ async def login(payload: UserLogin, db: AsyncSession = Depends(get_db)):
     token = create_access_token({"sub": str(user.id), "role": user.role})
     return TokenResponse(
         access_token=token,
-        user={"id": str(user.id), "email": user.email, "name": user.name, "role": user.role},
+        user={
+            "id": str(user.id),
+            "email": user.email,
+            "name": user.name,
+            "role": user.role,
+            "worker_id": str(user.worker_id) if user.worker_id else None,
+            "contractor_id": str(user.contractor_id) if user.contractor_id else None,
+        },
     )
 
 
@@ -65,4 +79,6 @@ async def get_me(current_user: User = Depends(get_current_user)):
         "name": current_user.name,
         "role": current_user.role,
         "region": current_user.region,
+        "worker_id": str(current_user.worker_id) if current_user.worker_id else None,
+        "contractor_id": str(current_user.contractor_id) if current_user.contractor_id else None,
     }

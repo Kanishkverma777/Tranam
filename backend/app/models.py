@@ -186,6 +186,11 @@ class User(Base):
     name = Column(String(255), nullable=False)
     role = Column(String(20), nullable=False, default="worker")
     region = Column(String(100))
+    
+    # Linked profiles
+    worker_id = Column(UUID(as_uuid=True), ForeignKey("workers.id", ondelete="SET NULL"))
+    contractor_id = Column(UUID(as_uuid=True), ForeignKey("contractors.id", ondelete="SET NULL"))
+
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
