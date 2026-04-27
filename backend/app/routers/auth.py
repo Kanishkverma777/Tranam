@@ -30,6 +30,21 @@ async def register(payload: UserRegister, db: AsyncSession = Depends(get_db)):
     db.add(user)
     await db.flush()
 
+    # Create and link profiles based on role
+    from ..models import Worker, Contractor
+    if user.role == "worker":
+        worker = Worker(name=user.name, phone_number="TBD-" + str(user.id)[:8], region=user.region or "Unknown")
+        db.add(worker)
+        await db.flush()
+        user.worker_id = worker.id
+    elif user.role == "contractor":
+        contractor = Contractor(name=user.name, region=user.region or "Unknown")
+        db.add(contractor)
+        await db.flush()
+        user.contractor_id = contractor.id
+    
+    await db.flush()
+
     token = create_access_token({"sub": str(user.id), "role": user.role})
     return TokenResponse(
         access_token=token,
@@ -57,6 +72,22 @@ async def login(payload: UserLogin, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=403, detail="Account is deactivated")
 
     token = create_access_token({"sub": str(user.id), "role": user.role})
+
+    # AUTO-LINK REPAIR: If user is missing a profile link, create and link it now
+    if (user.role == "worker" and not user.worker_id) or (user.role == "contractor" and not user.contractor_id):
+        from ..models import Worker, Contractor
+        if user.role == "worker" and not user.worker_id:
+            worker = Worker(name=user.name, phone_number="TBD-" + str(user.id)[:8], region=user.region or "Unknown")
+            db.add(worker)
+            await db.flush()
+            user.worker_id = worker.id
+        elif user.role == "contractor" and not user.contractor_id:
+            contractor = Contractor(name=user.name, region=user.region or "Unknown")
+            db.add(contractor)
+            await db.flush()
+            user.contractor_id = contractor.id
+        await db.flush()
+
     return TokenResponse(
         access_token=token,
         user={
