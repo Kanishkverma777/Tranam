@@ -49,13 +49,14 @@ export default function Sidebar() {
 
         <div style={{ flex: 1 }} />
 
-        {/* User Avatar */}
         <div
+          onClick={() => navigate('/profile')}
           style={{
             width: '44px', height: '44px', borderRadius: '50%',
             background: 'var(--bg-secondary)', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
-            marginBottom: '16px', color: 'var(--text-primary)'
+            marginBottom: '16px', color: 'var(--text-primary)',
+            cursor: 'pointer', border: location.pathname === '/profile' ? '2px solid var(--orange)' : 'none'
           }}
           title={user?.name}
         >

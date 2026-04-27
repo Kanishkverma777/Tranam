@@ -11,6 +11,7 @@ import WorkersPage from './pages/WorkersPage';
 import CheckinsPage from './pages/CheckinsPage';
 import IncidentsPage from './pages/IncidentsPage';
 import ContractorsPage from './pages/ContractorsPage';
+import ProfilePage from './pages/ProfilePage';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuthStore();
@@ -38,6 +39,7 @@ export default function App() {
         <Route path="/checkins" element={<ProtectedRoute><CheckinsPage /></ProtectedRoute>} />
         <Route path="/incidents" element={<ProtectedRoute><IncidentsPage /></ProtectedRoute>} />
         <Route path="/contractors" element={<ProtectedRoute><ContractorsPage /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

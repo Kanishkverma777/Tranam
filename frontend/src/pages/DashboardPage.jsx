@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Users, ClipboardCheck, AlertTriangle,
   Activity, TrendingUp, Map, Zap, Award,
-  Clock, CheckCircle, BarChart3, AlertOctagon
+  Clock, CheckCircle, BarChart3, AlertOctagon, User
 } from 'lucide-react';
 import { dashboardAPI, checkinsAPI } from '../api/client';
 import useAuthStore from '../store/authStore';
@@ -85,11 +85,20 @@ export default function DashboardPage() {
           <p>{header.sub}</p>
         </div>
         <div className="top-actions">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div className={`pulse-dot ${activeCheckins.length > 0 ? 'green' : 'gray'}`} />
-            <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-              {activeCheckins.length} Active Sessions
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div className={`pulse-dot ${activeCheckins.length > 0 ? 'green' : 'gray'}`} />
+              <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                {activeCheckins.length} Active Sessions
+              </span>
+            </div>
+            <button 
+              className="btn btn-outline btn-sm" 
+              onClick={() => navigate('/profile')}
+              style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+            >
+              <User size={16} /> Profile
+            </button>
           </div>
         </div>
       </div>
