@@ -43,22 +43,6 @@
 
 ---
 
-## 🏗 System Architecture
-
-```mermaid
-graph TD
-    A[IoT Sensors / Mobile App] -->|WebSocket/HTTP| B(FastAPI Backend)
-    B --> C[(PostgreSQL)]
-    B --> D[(Redis Cache)]
-    B --> E[Real-time Dashboards]
-    E --> F[Municipal Oversight]
-    E --> G[NGO/Public Monitoring]
-    B --> H{Alert Engine}
-    H -->|Emergency| I[SMS/Push Notifications]
-```
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
