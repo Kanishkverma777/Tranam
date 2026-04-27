@@ -24,6 +24,11 @@ const useAuthStore = create((set) => ({
     }
   },
 
+  setUser: (user) => {
+    localStorage.setItem('safeflow_user', JSON.stringify(user));
+    set({ user });
+  },
+
   logout: () => {
     localStorage.removeItem('safeflow_token');
     localStorage.removeItem('safeflow_user');
