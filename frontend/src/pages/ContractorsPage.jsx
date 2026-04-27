@@ -1,7 +1,7 @@
 // SafeFlow Global — Contractors Page
 
 import { useState, useEffect } from 'react';
-import { Building2, Star } from 'lucide-react';
+import { Building2, Star, Ban } from 'lucide-react';
 import { contractorsAPI } from '../api/client';
 
 export default function ContractorsPage() {
@@ -71,7 +71,7 @@ export default function ContractorsPage() {
                 </td>
                 <td>
                   {c.is_blacklisted
-                    ? <span className="badge-risk red">⛔ Blacklisted</span>
+                    ? <span className="badge-risk red" style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Ban size={12} /> Blacklisted</span>
                     : <span className="badge-status active">Active</span>
                   }
                 </td>

@@ -1,7 +1,7 @@
 // SafeFlow Global — Incidents Page
 
 import { useState, useEffect } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { incidentsAPI } from '../api/client';
 
 export default function IncidentsPage() {
@@ -51,7 +51,7 @@ export default function IncidentsPage() {
             {incidents.length === 0 ? (
               <tr><td colSpan="6">
                 <div className="empty-state">
-                  <div className="icon">✅</div>
+                   <div className="icon"><CheckCircle size={32} style={{ color: 'var(--green)' }} /></div>
                   <h3>No incidents reported</h3>
                   <p>This is good news</p>
                 </div>
@@ -67,7 +67,14 @@ export default function IncidentsPage() {
                 <td><span className={`badge-risk ${severityColor(inc.severity)}`}>{inc.severity}</span></td>
                 <td>{inc.region || inc.country || '—'}</td>
                 <td><span className="badge-status active" style={{ textTransform: 'capitalize' }}>{inc.status}</span></td>
-                <td>{inc.authority_notified ? '✅ Yes' : '❌ No'}</td>
+                <td>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {inc.authority_notified 
+                      ? <><CheckCircle size={14} style={{ color: 'var(--green)' }} /> Yes</> 
+                      : <><XCircle size={14} style={{ color: 'var(--red)' }} /> No</>
+                    }
+                  </span>
+                </td>
                 <td style={{ fontSize: 13 }}>{new Date(inc.reported_at).toLocaleDateString()}</td>
               </tr>
             ))}

@@ -9,12 +9,14 @@ import {
 } from 'lucide-react';
 import { dashboardAPI, checkinsAPI } from '../api/client';
 import useAuthStore from '../store/authStore';
+import SafetyMap from '../components/SafetyMap';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [stats, setStats] = useState(null);
   const [activeCheckins, setActiveCheckins] = useState([]);
+  const [heatmap, setHeatmap] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const role = user?.role?.toLowerCase() || 'worker';
@@ -27,12 +29,14 @@ export default function DashboardPage() {
 
   const loadDashboard = async () => {
     try {
-      const [statsRes, activeRes] = await Promise.all([
+      const [statsRes, activeRes, heatmapRes] = await Promise.all([
         dashboardAPI.stats(),
         checkinsAPI.active(),
+        dashboardAPI.heatmap(),
       ]);
       setStats(statsRes.data);
       setActiveCheckins(activeRes.data);
+      setHeatmap(heatmapRes.data);
     } catch (err) {
       console.error('Dashboard load failed:', err);
     } finally {
@@ -192,7 +196,7 @@ export default function DashboardPage() {
               <>
                 <div className="data-card-header"><h3>Recent Activity</h3><Clock size={18} /></div>
                 <div className="empty-state">
-                  <div className="icon">🛡️</div>
+                  <div className="icon"><Activity size={32} style={{ color: 'var(--orange)' }} /></div>
                   <h3>Your safety log</h3>
                   <p>All your underground sessions are logged here for verification.</p>
                 </div>
@@ -208,25 +212,29 @@ export default function DashboardPage() {
                   </h3>
                   <Map size={18} />
                 </div>
-                {activeCheckins.length === 0 ? (
-                  <div className="empty-state">
-                    <div className="icon">✅</div>
-                    <h3>All Clear</h3>
-                    <p>No active deployments detected.</p>
+                <div style={{ height: 400, width: '100%' }}>
+                  <SafetyMap 
+                    incidents={heatmap} 
+                    activeCheckins={activeCheckins} 
+                    center={activeCheckins.length > 0 ? [activeCheckins[0].latitude, activeCheckins[0].longitude] : [20.5937, 78.9629]}
+                    zoom={activeCheckins.length > 0 ? 12 : 5}
+                  />
+                </div>
+                {activeCheckins.length > 0 && (
+                  <div style={{ marginTop: 16 }}>
+                    <table className="data-table">
+                      <thead><tr><th>ID</th><th>Level</th><th>Timer</th></tr></thead>
+                      <tbody>
+                        {activeCheckins.slice(0, 3).map((c) => (
+                          <tr key={c.id}>
+                            <td>{c.id.slice(0, 8)}</td>
+                            <td><span className={`badge-risk ${c.risk_level?.toLowerCase()}`}>{c.risk_level}</span></td>
+                            <td>{new Date(c.deadline).toLocaleTimeString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                ) : (
-                  <table className="data-table">
-                    <thead><tr><th>ID</th><th>Level</th><th>Timer</th></tr></thead>
-                    <tbody>
-                      {activeCheckins.slice(0, 5).map((c) => (
-                        <tr key={c.id}>
-                          <td>{c.id.slice(0, 8)}</td>
-                          <td><span className={`badge-risk ${c.risk_level?.toLowerCase()}`}>{c.risk_level}</span></td>
-                          <td>{new Date(c.deadline).toLocaleTimeString()}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
                 )}
               </>
             )}
