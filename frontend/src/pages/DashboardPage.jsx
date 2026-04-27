@@ -172,21 +172,60 @@ export default function DashboardPage() {
             </div>
             <div style={{ padding: 24 }}>
               {['GREEN', 'YELLOW', 'RED'].map((level) => {
+                const count = s.risk_distribution[level] || 0;
                 const total = (s.risk_distribution.GREEN + s.risk_distribution.YELLOW + s.risk_distribution.RED) || 1;
-                const pct = Math.round((s.risk_distribution[level] / total) * 100);
-                const color = level === 'GREEN' ? 'var(--green)' : level === 'YELLOW' ? 'var(--yellow)' : 'var(--red)';
+                const pct = Math.round((count / total) * 100);
+                
+                const config = {
+                  GREEN: { color: 'var(--green)', label: 'Safe & Verified', desc: 'Compliant with all protocols' },
+                  YELLOW: { color: 'var(--yellow)', label: 'Precautionary', desc: 'Minor safety gaps detected' },
+                  RED: { color: 'var(--red)', label: 'High Risk/Emergency', desc: 'Critical violations or dangers' }
+                }[level];
+
                 return (
-                  <div key={level} style={{ marginBottom: 16 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 13 }}>
-                      <span style={{ color }}>{level}</span>
-                      <span style={{ color: 'var(--text-muted)' }}>{pct}%</span>
+                  <div key={level} style={{ marginBottom: 20 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 8 }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: config.color }} />
+                          <span style={{ fontWeight: 600, fontSize: 13, color: config.color }}>{config.label}</span>
+                        </div>
+                        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{config.desc}</div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <span style={{ fontWeight: 700, fontSize: 15 }}>{count}</span>
+                        <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 4 }}>({pct}%)</span>
+                      </div>
                     </div>
-                    <div style={{ height: 6, background: 'var(--bg-secondary)', borderRadius: 3, overflow: 'hidden' }}>
-                      <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 3 }} />
+                    <div style={{ height: 8, background: 'var(--bg-secondary)', borderRadius: 4, overflow: 'hidden' }}>
+                      <div 
+                        style={{ 
+                          width: `${pct}%`, 
+                          height: '100%', 
+                          background: config.color, 
+                          borderRadius: 4,
+                          transition: 'width 1s ease-out'
+                        }} 
+                      />
                     </div>
                   </div>
                 );
               })}
+              
+              <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: 12 }}>
+                  <div style={{ color: 'var(--text-muted)' }}>Avg. Safety Compliance</div>
+                  <div style={{ fontWeight: 700, fontSize: 18, color: 'var(--green)' }}>
+                    {Math.round(((s.risk_distribution.GREEN * 100) + (s.risk_distribution.YELLOW * 50)) / ((s.risk_distribution.GREEN + s.risk_distribution.YELLOW + s.risk_distribution.RED) || 1))}%
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Status</div>
+                  <div style={{ fontWeight: 600, fontSize: 12, color: 'var(--green)', background: 'rgba(34, 197, 94, 0.1)', padding: '2px 8px', borderRadius: 4 }}>
+                    Operational
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
