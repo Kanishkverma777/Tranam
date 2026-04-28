@@ -1,4 +1,4 @@
-// SafeFlow Global — Register Page
+// TRANAM — Register Page
 
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
