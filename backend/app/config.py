@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     # App
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
-    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000"
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:5174,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:5174,https://tranam.netlify.app"
 
     @property
     def allowed_origins_list(self) -> list[str]:
