@@ -74,19 +74,21 @@ async def login(payload: UserLogin, db: AsyncSession = Depends(get_db)):
     token = create_access_token({"sub": str(user.id), "role": user.role})
 
     # AUTO-LINK REPAIR: If user is missing a profile link, create and link it now
-    if (user.role == "worker" and not user.worker_id) or (user.role == "contractor" and not user.contractor_id):
+    role_lower = user.role.lower() if user.role else ""
+    if (role_lower == "worker" and not user.worker_id) or (role_lower == "contractor" and not user.contractor_id):
         from ..models import Worker, Contractor
-        if user.role == "worker" and not user.worker_id:
+        if role_lower == "worker" and not user.worker_id:
             worker = Worker(name=user.name, phone_number="TBD-" + str(user.id)[:8], region=user.region or "Unknown")
             db.add(worker)
             await db.flush()
             user.worker_id = worker.id
-        elif user.role == "contractor" and not user.contractor_id:
+        elif role_lower == "contractor" and not user.contractor_id:
             contractor = Contractor(name=user.name, region=user.region or "Unknown")
             db.add(contractor)
             await db.flush()
             user.contractor_id = contractor.id
-        await db.flush()
+        await db.commit()
+        await db.refresh(user)
 
     return TokenResponse(
         access_token=token,
@@ -103,23 +105,26 @@ async def login(payload: UserLogin, db: AsyncSession = Depends(get_db)):
 
 @router.get("/me")
 async def get_me(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    """Get current user profile with auto-repair for missing links"""
+    """Get current user profile with robust auto-repair and immediate refresh"""
+    
+    role_lower = current_user.role.lower() if current_user.role else ""
     
     # AUTO-LINK REPAIR: If user is missing a profile link, create and link it now
-    if (current_user.role == "worker" and not current_user.worker_id) or (current_user.role == "contractor" and not current_user.contractor_id):
+    if (role_lower == "worker" and not current_user.worker_id) or (role_lower == "contractor" and not current_user.contractor_id):
         from ..models import Worker, Contractor
-        if current_user.role == "worker" and not current_user.worker_id:
+        if role_lower == "worker" and not current_user.worker_id:
             worker = Worker(name=current_user.name, phone_number="TBD-" + str(current_user.id)[:8], region=current_user.region or "Unknown")
             db.add(worker)
             await db.flush()
             current_user.worker_id = worker.id
-        elif current_user.role == "contractor" and not current_user.contractor_id:
+        elif role_lower == "contractor" and not current_user.contractor_id:
             contractor = Contractor(name=current_user.name, region=current_user.region or "Unknown")
             db.add(contractor)
             await db.flush()
             current_user.contractor_id = contractor.id
-        await db.flush()
-        # Note: Session commit is handled by get_db dependency
+        
+        await db.commit() # Explicitly commit to ensure ID is persisted
+        await db.refresh(current_user) # Refresh the user object to get the latest DB state
 
     return {
         "id": str(current_user.id),
