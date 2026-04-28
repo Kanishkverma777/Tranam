@@ -1,7 +1,9 @@
 // SafeFlow Global — Main Application
 
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import useAuthStore from './store/authStore';
+import { authAPI } from './api/client';
 import Sidebar from './components/Sidebar';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -26,6 +28,16 @@ function ProtectedRoute({ children }) {
 }
 
 export default function App() {
+  const { isAuthenticated, setUser } = useAuthStore();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      authAPI.me()
+        .then(({ data }) => setUser(data))
+        .catch(() => {}); // Interceptor handles 401
+    }
+  }, [isAuthenticated]);
+
   return (
     <BrowserRouter>
       <Routes>
