@@ -57,11 +57,11 @@ export const checkinsAPI = {
 
 // Incidents
 export const incidentsAPI = {
-  list: (params) => api.get('/incidents/', { params }),
-  get: (id) => api.get(`/incidents/${id}/`),
-  report: (data) => api.post('/incidents/report/', data),
-  updateStatus: (id, data) => api.put(`/incidents/${id}/status/`, data),
-  count: () => api.get('/incidents/count/'),
+  list: (params) => api.get('/incidents', { params }),
+  get: (id) => api.get(`/incidents/${id}`),
+  report: (data) => api.post('/incidents/report', data),
+  updateStatus: (id, data) => api.put(`/incidents/${id}/status`, data),
+  count: () => api.get('/incidents/count'),
 };
 
 // Contractors

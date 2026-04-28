@@ -14,15 +14,20 @@ logger = logging.getLogger(__name__)
 
 import google.generativeai as genai
 
+# Initialize Gemini outside the function for better performance
+if settings.GEMINI_API_KEY:
+    genai.configure(api_key=settings.GEMINI_API_KEY)
+    model = genai.GenerativeModel("gemini-flash-latest")
+else:
+    model = None
+
 async def assess_job_risk(job_data: dict) -> dict:
     """
     AI-powered risk assessment before manhole/sewer entry using Google Gemini.
     Falls back to rule-based scoring if the AI is unavailable.
     """
-    if settings.GEMINI_API_KEY:
+    if model:
         try:
-            genai.configure(api_key=settings.GEMINI_API_KEY)
-            model = genai.GenerativeModel("gemini-1.5-flash")
             
             prompt = f"""You are a safety expert for confined space work.
 Assess risk for this sewer entry job:

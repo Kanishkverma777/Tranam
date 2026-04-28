@@ -17,14 +17,20 @@ router = APIRouter()
 @router.post("/report", response_model=IncidentResponse, status_code=201)
 async def report_incident(payload: IncidentCreate, db: AsyncSession = Depends(get_db)):
     """Report a new incident"""
-    incident = Incident(
-        **payload.model_dump(),
-        incident_date=payload.incident_date or datetime.utcnow(),
-    )
-    db.add(incident)
-    await db.flush()
-    await db.refresh(incident)
-    return incident
+    try:
+        data = payload.model_dump()
+        if not data.get("incident_date"):
+            data["incident_date"] = datetime.utcnow()
+            
+        incident = Incident(**data)
+        db.add(incident)
+        await db.flush()
+        await db.refresh(incident)
+        return incident
+    except Exception as e:
+        import logging
+        logging.error(f"Incident report failed: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Database error: {str(e)}")
 
 
 @router.get("/", response_model=list[IncidentResponse])

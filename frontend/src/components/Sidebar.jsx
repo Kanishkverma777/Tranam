@@ -3,9 +3,11 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Users, ClipboardCheck, AlertTriangle,
-  Building2, LogOut, User
+  Building2, LogOut, User, Zap, Bell, Siren
 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
+import { incidentsAPI } from '../api/client';
+import { useState, useEffect } from 'react';
 
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['worker', 'ngo', 'municipality', 'contractor'] },
@@ -19,6 +21,22 @@ export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout, user } = useAuthStore();
+  const [hasAlerts, setHasAlerts] = useState(false);
+  const role = user?.role?.toLowerCase() || 'worker';
+
+  useEffect(() => {
+    if (role !== 'worker') {
+      const checkAlerts = async () => {
+        try {
+          const { data } = await incidentsAPI.list({ severity: 'critical', limit: 1 });
+          if (data.length > 0) setHasAlerts(true);
+        } catch (e) {}
+      };
+      checkAlerts();
+      const interval = setInterval(checkAlerts, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [role]);
 
   const handleLogout = () => {
     logout();
@@ -46,6 +64,27 @@ export default function Sidebar() {
               <span>{item.label}</span>
             </button>
           ))}
+
+        {role === 'worker' && (
+          <button 
+            className="nav-link" 
+            onClick={() => navigate('/emergency-alert')}
+            style={{ 
+              background: '#EF4444', 
+              color: 'white', 
+              marginTop: 12, 
+              borderRadius: '12px',
+              fontWeight: 800,
+              boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)'
+            }}
+            title="Signal Emergency"
+          >
+            <Siren size={22} />
+            <span>SOS SIGNAL</span>
+          </button>
+        )}
+
+        {/* Alerts icon removed per user request */}
 
         <div style={{ flex: 1 }} />
 

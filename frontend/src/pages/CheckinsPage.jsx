@@ -1,13 +1,19 @@
 // SafeFlow Global — Check-ins Page
 
 import { useState, useEffect } from 'react';
-import { RefreshCw, Clock, CheckCircle } from 'lucide-react';
+import { RefreshCw, Clock, CheckCircle, PlusCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { checkinsAPI } from '../api/client';
+import useAuthStore from '../store/authStore';
 
 export default function CheckinsPage() {
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
   const [checkins, setCheckins] = useState([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
+  
+  const role = user?.role?.toLowerCase() || 'worker';
 
   useEffect(() => { loadCheckins(); }, [filter]);
 
@@ -45,6 +51,16 @@ export default function CheckinsPage() {
             </button>
           ))}
           <button className="btn btn-outline btn-sm" onClick={loadCheckins}><RefreshCw size={14} /></button>
+          
+          {role === 'worker' && (
+            <button 
+              className="btn btn-primary btn-sm" 
+              onClick={() => navigate('/dashboard?isCheckingIn=true')}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12 }}
+            >
+              <PlusCircle size={14} /> Start New Check-in
+            </button>
+          )}
         </div>
       </div>
 
@@ -61,6 +77,7 @@ export default function CheckinsPage() {
                 <th>Status</th>
                 <th>Started</th>
                 <th>Deadline</th>
+                <th>AI Analysis</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -81,6 +98,11 @@ export default function CheckinsPage() {
                   </td>
                   <td style={{ fontSize: 13 }}>{formatTime(c.started_at)}</td>
                   <td style={{ fontSize: 13 }}>{formatTime(c.deadline)}</td>
+                  <td style={{ maxWidth: 180, fontSize: 11, color: 'var(--text-muted)' }}>
+                    <div title={c.ai_recommendation} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {c.ai_recommendation || 'No AI data'}
+                    </div>
+                  </td>
                   <td>
                     {c.status === 'active' && (
                       <button className="btn btn-sm btn-primary" onClick={() => handleCheckout(c.id)}>

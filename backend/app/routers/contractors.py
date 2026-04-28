@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_db
 from ..models import Contractor, ContractorRating
-from ..schemas import ContractorCreate, ContractorResponse, ContractorRatingCreate
+from ..schemas import ContractorCreate, ContractorResponse, ContractorRatingCreate, ContractorUpdate
 from ..auth import get_current_user
 
 router = APIRouter()
