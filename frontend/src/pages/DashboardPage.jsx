@@ -7,7 +7,7 @@ import {
   Activity, TrendingUp, Map, Zap, Award,
   Clock, CheckCircle, BarChart3, AlertOctagon, User, Brain, Sparkles, ShieldCheck
 } from 'lucide-react';
-import { dashboardAPI, checkinsAPI } from '../api/client';
+import { dashboardAPI, checkinsAPI, authAPI } from '../api/client';
 import useAuthStore from '../store/authStore';
 import SafetyMap from '../components/SafetyMap';
 
@@ -96,7 +96,25 @@ export default function DashboardPage() {
 
   const handleStartCheckin = async (e) => {
     e.preventDefault();
-    if (!user?.worker_id) return alert("Worker ID missing. Please update profile.");
+    
+    let currentWorkerId = user?.worker_id;
+    
+    // If worker_id is missing, try one last sync before failing
+    if (!currentWorkerId) {
+      try {
+        const { data } = await authAPI.me();
+        if (data.worker_id) {
+          setUser(data);
+          currentWorkerId = data.worker_id;
+        }
+      } catch (err) {
+        console.error("Auto-sync failed:", err);
+      }
+    }
+
+    if (!currentWorkerId) {
+      return alert("Identity Verification Failed: Your account is not yet linked to a Worker Profile. Please try refreshing the page or contact support.");
+    }
 
     setSubmitting(true);
     try {
