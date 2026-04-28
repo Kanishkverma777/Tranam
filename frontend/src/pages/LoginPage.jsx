@@ -1,4 +1,4 @@
-// SafeFlow Global — Login Page
+// TRANAM — Login Page
 
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -37,7 +37,7 @@ export default function LoginPage() {
             <h2>Welcome Back</h2>
           </div>
         </div>
-        <p className="subtitle">Sign in to the monitoring dashboard</p>
+        <p className="subtitle">Sign in to the TRANAM dashboard</p>
 
         {error && <div className="login-error">{error}</div>}
 
@@ -45,7 +45,7 @@ export default function LoginPage() {
           <div className="form-group">
             <label>Email Address</label>
             <input
-              type="email" className="form-input" placeholder="admin@safeflow.global"
+              type="email" className="form-input" placeholder="admin@tranam.ai"
               value={email} onChange={(e) => setEmail(e.target.value)} required
             />
           </div>
