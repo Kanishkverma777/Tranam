@@ -37,14 +37,14 @@ export default function DashboardPage() {
   useEffect(() => {
     loadDashboard();
     const interval = setInterval(loadDashboard, 15000); // Refresh every 15s
-    
+
     // Handle deep-links
     const params = new URLSearchParams(window.location.search);
     if (params.get('isCheckingIn') === 'true') {
       setIsCheckingIn(true);
       window.history.replaceState({}, '', window.location.pathname);
     }
-    
+
     return () => clearInterval(interval);
   }, [user]);
 
@@ -83,7 +83,7 @@ export default function DashboardPage() {
         const myCheckin = data.find(c => c.worker_id === user.worker_id);
         setMyActiveCheckin(myCheckin || null);
       }
-      
+
       // Load notifications for authorities
       if (role !== 'worker') {
         const incidentsRes = await incidentsAPI.list({ severity: 'critical', limit: 5 });
@@ -176,8 +176,8 @@ export default function DashboardPage() {
                 {activeCheckins.length} Active Sessions
               </span>
             </div>
-            <button 
-              className="btn btn-outline btn-sm" 
+            <button
+              className="btn btn-outline btn-sm"
               onClick={() => navigate('/profile')}
               style={{ display: 'flex', alignItems: 'center', gap: 8 }}
             >

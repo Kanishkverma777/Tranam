@@ -102,8 +102,25 @@ async def login(payload: UserLogin, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/me")
-async def get_me(current_user: User = Depends(get_current_user)):
-    """Get current user profile"""
+async def get_me(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """Get current user profile with auto-repair for missing links"""
+    
+    # AUTO-LINK REPAIR: If user is missing a profile link, create and link it now
+    if (current_user.role == "worker" and not current_user.worker_id) or (current_user.role == "contractor" and not current_user.contractor_id):
+        from ..models import Worker, Contractor
+        if current_user.role == "worker" and not current_user.worker_id:
+            worker = Worker(name=current_user.name, phone_number="TBD-" + str(current_user.id)[:8], region=current_user.region or "Unknown")
+            db.add(worker)
+            await db.flush()
+            current_user.worker_id = worker.id
+        elif current_user.role == "contractor" and not current_user.contractor_id:
+            contractor = Contractor(name=current_user.name, region=current_user.region or "Unknown")
+            db.add(contractor)
+            await db.flush()
+            current_user.contractor_id = contractor.id
+        await db.flush()
+        # Note: Session commit is handled by get_db dependency
+
     return {
         "id": str(current_user.id),
         "email": current_user.email,

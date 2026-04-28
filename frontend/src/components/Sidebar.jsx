@@ -30,7 +30,7 @@ export default function Sidebar() {
         try {
           const { data } = await incidentsAPI.list({ severity: 'critical', limit: 1 });
           if (data.length > 0) setHasAlerts(true);
-        } catch (e) {}
+        } catch (e) { }
       };
       checkAlerts();
       const interval = setInterval(checkAlerts, 30000);
@@ -66,13 +66,13 @@ export default function Sidebar() {
           ))}
 
         {role === 'worker' && (
-          <button 
-            className="nav-link" 
+          <button
+            className="nav-link"
             onClick={() => navigate('/emergency-alert')}
-            style={{ 
-              background: '#EF4444', 
-              color: 'white', 
-              marginTop: 12, 
+            style={{
+              background: '#EF4444',
+              color: 'white',
+              marginTop: 12,
               borderRadius: '12px',
               fontWeight: 800,
               boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)'

@@ -22,7 +22,7 @@ export default function EmergencyAlertPage() {
           const mine = data.find(c => c.worker_id === user.worker_id);
           setMyActiveCheckin(mine || null);
         }
-      } catch (e) {}
+      } catch (e) { }
     };
     loadCheckin();
   }, [user]);
@@ -30,7 +30,7 @@ export default function EmergencyAlertPage() {
   const handleSendAlert = async () => {
     if (!user?.worker_id) return;
     setSubmitting(true);
-    
+
     try {
       const payload = {
         worker_id: user.worker_id,
@@ -65,8 +65,8 @@ export default function EmergencyAlertPage() {
 
   return (
     <div className="emergency-page" style={{ padding: '40px', maxWidth: '800px', margin: '0 auto' }}>
-      <button 
-        onClick={() => navigate(-1)} 
+      <button
+        onClick={() => navigate(-1)}
         style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', marginBottom: 32, fontWeight: 700 }}
       >
         <ArrowLeft size={18} /> Back to Dashboard
@@ -88,8 +88,8 @@ export default function EmergencyAlertPage() {
         <div style={{ padding: '48px' }}>
           {isSent ? (
             <div style={{ textAlign: 'center', padding: '60px 0' }}>
-              <div style={{ 
-                width: 120, height: 120, borderRadius: '50%', background: '#EF4444', color: 'white', 
+              <div style={{
+                width: 120, height: 120, borderRadius: '50%', background: '#EF4444', color: 'white',
                 margin: '0 auto 32px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 animation: 'pulse 2s infinite'
               }}>
@@ -104,7 +104,7 @@ export default function EmergencyAlertPage() {
           ) : (
             <>
               <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 24 }}>What is the nature of the emergency?</h3>
-              
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 40 }}>
                 {alertOptions.map(opt => (
                   <button
@@ -118,8 +118,8 @@ export default function EmergencyAlertPage() {
                       display: 'flex', flexDirection: 'column', gap: 12
                     }}
                   >
-                    <div style={{ 
-                      width: 44, height: 44, borderRadius: '12px', 
+                    <div style={{
+                      width: 44, height: 44, borderRadius: '12px',
                       background: alertType === opt.id ? '#EF4444' : 'var(--bg-secondary)',
                       color: alertType === opt.id ? 'white' : 'var(--text-primary)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center'
